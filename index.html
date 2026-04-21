@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Free Resume Builder by P-L G. — Create, preview & download professional PDFs instantly. No sign-up.">
     <title>ResumeRocket — Free Resume Builder by P-L G.</title>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Google Analytics (replace G-XXXXXXXXXX with your real ID later) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -24,7 +37,6 @@
                 <span class="text-sm text-gray-500">by P-L G. (@PLG1991)</span>
             </div>
             <div class="flex items-center gap-6 text-sm">
-                <!-- Affiliate / Support -->
                 <a href="https://www.canva.com/create/resumes/?referral=your-canva-affiliate-link-here" target="_blank" 
                    class="flex items-center gap-1 text-emerald-600 hover:text-emerald-700">
                     <span>❤️ Get pro designs on Canva (affiliate)</span>
@@ -33,7 +45,6 @@
                    class="flex items-center gap-1 bg-amber-100 text-amber-700 px-4 py-1 rounded-full hover:bg-amber-200">
                     ☕ Support me on Ko-fi
                 </a>
-                <!-- AdSense placeholder - replace with your code later -->
                 <div class="text-xs text-gray-400 border border-dashed border-gray-300 px-3 py-1 rounded">📣 Ad space (AdSense goes here once approved)</div>
             </div>
             <button onclick="downloadPDF()" 
@@ -103,7 +114,6 @@
         <!-- LIVE PREVIEW -->
         <div>
             <div id="resume-preview" class="resume-preview bg-white border-2 border-gray-200 rounded-3xl p-8 mx-auto max-w-[21cm] min-h-[29.7cm] text-[14px] leading-relaxed">
-                <!-- JS will fill this -->
                 <div class="text-center mb-8">
                     <h1 id="preview-name" class="text-4xl font-semibold text-gray-900"></h1>
                     <p id="preview-title" class="text-sky-600 text-xl mt-1"></p>
@@ -127,55 +137,34 @@
         </div>
     </div>
 
-    <!-- Footer with more monetization -->
     <footer class="bg-white border-t py-8 text-center text-xs text-gray-500">
         Made with ❤️ by <strong>P-L G.</strong> • <a href="https://x.com/PLG1991" target="_blank" class="underline">Follow me on X @PLG1991</a><br>
         This tool is 100% free. Share it, use it, and if it helped you land a job — buy me a coffee ☕
     </footer>
 
     <script>
-        // Sample data
-        let experiences = [
-            { title: "Freelance Web Builder", company: "Self-employed", date: "2025 — Present", desc: "Built and launched multiple income-generating web tools from zero." }
-        ];
-        let educations = [
-            { school: "Your University", degree: "Bachelor in [Field]", date: "2021 — 2025" }
-        ];
+        let experiences = [{ title: "Freelance Web Builder", company: "Self-employed", date: "2025 — Present", desc: "Built and launched multiple income-generating web tools from zero." }];
+        let educations = [{ school: "Your University", degree: "Bachelor in [Field]", date: "2021 — 2025" }];
 
         function updatePreview() {
-            // Personal
             document.getElementById('preview-name').textContent = document.getElementById('name').value || "Your Name";
             document.getElementById('preview-title').textContent = document.getElementById('title').value || "Your Title";
-            
-            // Contact
             const email = document.getElementById('email').value;
-            document.getElementById('preview-contact').innerHTML = `
-                <div>${email}</div>
-            `;
-
-            // Summary
+            document.getElementById('preview-contact').innerHTML = `<div>${email}</div>`;
             document.getElementById('preview-summary').textContent = document.getElementById('summary').value;
 
-            // Experience
             let expHTML = `<h2 class="section-header uppercase text-xs tracking-widest font-semibold text-gray-400 mb-3">EXPERIENCE</h2>`;
             experiences.forEach(exp => {
-                expHTML += `
-                    <div class="mb-6">
-                        <div class="flex justify-between"><strong>\( {exp.title}</strong> <span class="text-gray-500"> \){exp.date}</span></div>
-                        <div class="text-sky-600">${exp.company}</div>
-                        <p class="text-gray-600 mt-1">${exp.desc}</p>
-                    </div>`;
+                expHTML += `<div class="mb-6"><div class="flex justify-between"><strong>\( {exp.title}</strong> <span class="text-gray-500"> \){exp.date}</span></div><div class="text-sky-600">\( {exp.company}</div><p class="text-gray-600 mt-1"> \){exp.desc}</p></div>`;
             });
             document.getElementById('preview-experience').innerHTML = expHTML;
 
-            // Education
             let eduHTML = `<h2 class="section-header uppercase text-xs tracking-widest font-semibold text-gray-400 mb-3">EDUCATION</h2>`;
             educations.forEach(edu => {
                 eduHTML += `<div class="mb-4"><strong>\( {edu.degree}</strong><br><span class="text-gray-600"> \){edu.school} • ${edu.date}</span></div>`;
             });
             document.getElementById('preview-education').innerHTML = eduHTML;
 
-            // Skills
             const skillsText = document.getElementById('skills').value;
             const skillsArray = skillsText.split(',').map(s => s.trim()).filter(Boolean);
             let skillsHTML = skillsArray.map(skill => `<span class="px-4 py-1 bg-gray-100 rounded-3xl text-xs">${skill}</span>`).join('');
@@ -183,20 +172,15 @@
         }
 
         function addExperience() {
-            const title = prompt("Job title?");
-            if (!title) return;
-            const company = prompt("Company?");
-            const date = prompt("Dates (e.g. 2024 — Present)?");
-            const desc = prompt("Short description?");
+            const title = prompt("Job title?"); if (!title) return;
+            const company = prompt("Company?"); const date = prompt("Dates?"); const desc = prompt("Description?");
             experiences.push({ title, company, date, desc });
             updatePreview();
         }
 
         function addEducation() {
-            const degree = prompt("Degree?");
-            if (!degree) return;
-            const school = prompt("School?");
-            const date = prompt("Dates?");
+            const degree = prompt("Degree?"); if (!degree) return;
+            const school = prompt("School?"); const date = prompt("Dates?");
             educations.push({ school, degree, date });
             updatePreview();
         }
@@ -205,28 +189,19 @@
             const preview = document.getElementById('resume-preview');
             const canvas = await html2canvas(preview, { scale: 3 });
             const imgData = canvas.toDataURL('image/png');
-            
             const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
-            
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
             pdf.save(`Resume_${document.getElementById('name').value || 'P-L_G'}.pdf`);
-            
-            // Optional: show success message
-            alert("✅ PDF downloaded! Share the link to your live app and start getting users.");
         }
 
-        // Initial load
         window.onload = () => {
             updatePreview();
-            // Tailwind script already loaded
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js');
+            }
         };
     </script>
 </body>
