@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free Resume Builder by P-L G. — Create, preview & download professional PDFs instantly. No sign-up.">
+    <title>ResumeRocket — Free Resume Builder by P-L G.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        :root { --tw-color-primary: #0ea5e9; }
+        .resume-preview { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+        .section-header { font-family: 'Inter', system-ui; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Top bar with branding & monetization -->
+    <div class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl font-semibold text-sky-600">🚀 ResumeRocket</h1>
+                <span class="text-sm text-gray-500">by P-L G. (@PLG1991)</span>
+            </div>
+            <div class="flex items-center gap-6 text-sm">
+                <!-- Affiliate / Support -->
+                <a href="https://www.canva.com/create/resumes/?referral=your-canva-affiliate-link-here" target="_blank" 
+                   class="flex items-center gap-1 text-emerald-600 hover:text-emerald-700">
+                    <span>❤️ Get pro designs on Canva (affiliate)</span>
+                </a>
+                <a href="https://ko-fi.com/plg1991" target="_blank" 
+                   class="flex items-center gap-1 bg-amber-100 text-amber-700 px-4 py-1 rounded-full hover:bg-amber-200">
+                    ☕ Support me on Ko-fi
+                </a>
+                <!-- AdSense placeholder - replace with your code later -->
+                <div class="text-xs text-gray-400 border border-dashed border-gray-300 px-3 py-1 rounded">📣 Ad space (AdSense goes here once approved)</div>
+            </div>
+            <button onclick="downloadPDF()" 
+                    class="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-xl flex items-center gap-2 font-medium">
+                <span>📄 Download PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 px-6 py-8">
+        <!-- FORM -->
+        <div class="bg-white rounded-3xl shadow p-8">
+            <h2 class="text-xl font-semibold mb-6">Fill your info → live preview updates instantly</h2>
+            
+            <!-- Personal -->
+            <div class="mb-8">
+                <label class="block text-sm font-medium mb-2">Full Name</label>
+                <input id="name" type="text" value="P-L G." oninput="updatePreview()" 
+                       class="w-full border rounded-2xl px-4 py-3 focus:outline-none focus:border-sky-500">
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Job Title</label>
+                    <input id="title" type="text" value="Aspiring Developer / Creator" oninput="updatePreview()" 
+                           class="w-full border rounded-2xl px-4 py-3 focus:outline-none focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Email</label>
+                    <input id="email" type="email" value="your@email.com" oninput="updatePreview()" 
+                           class="w-full border rounded-2xl px-4 py-3 focus:outline-none focus:border-sky-500">
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="mb-8">
+                <label class="block text-sm font-medium mb-2">Professional Summary</label>
+                <textarea id="summary" rows="3" oninput="updatePreview()" 
+                          class="w-full border rounded-3xl px-4 py-3 focus:outline-none focus:border-sky-500">Hard-working creator building tools that help people land better jobs. Passionate about simple, powerful web apps.</textarea>
+            </div>
+
+            <!-- Experience -->
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-3">
+                    <label class="text-sm font-medium">Experience</label>
+                    <button onclick="addExperience()" class="text-sky-600 text-sm flex items-center gap-1 hover:underline">+ Add job</button>
+                </div>
+                <div id="experience-list" class="space-y-4"></div>
+            </div>
+
+            <!-- Education -->
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-3">
+                    <label class="text-sm font-medium">Education</label>
+                    <button onclick="addEducation()" class="text-sky-600 text-sm flex items-center gap-1 hover:underline">+ Add</button>
+                </div>
+                <div id="education-list" class="space-y-4"></div>
+            </div>
+
+            <!-- Skills -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Skills (comma separated)</label>
+                <input id="skills" type="text" value="JavaScript, Tailwind, GitHub Pages, Problem Solving" oninput="updatePreview()" 
+                       class="w-full border rounded-2xl px-4 py-3 focus:outline-none focus:border-sky-500">
+            </div>
+        </div>
+
+        <!-- LIVE PREVIEW -->
+        <div>
+            <div id="resume-preview" class="resume-preview bg-white border-2 border-gray-200 rounded-3xl p-8 mx-auto max-w-[21cm] min-h-[29.7cm] text-[14px] leading-relaxed">
+                <!-- JS will fill this -->
+                <div class="text-center mb-8">
+                    <h1 id="preview-name" class="text-4xl font-semibold text-gray-900"></h1>
+                    <p id="preview-title" class="text-sky-600 text-xl mt-1"></p>
+                </div>
+                <div id="preview-contact" class="flex justify-center gap-6 text-sm mb-8 text-gray-600"></div>
+                
+                <div class="mb-8">
+                    <h2 class="section-header uppercase text-xs tracking-widest font-semibold text-gray-400 mb-3">SUMMARY</h2>
+                    <p id="preview-summary" class="text-gray-700"></p>
+                </div>
+                
+                <div id="preview-experience" class="mb-8"></div>
+                <div id="preview-education" class="mb-8"></div>
+                
+                <div>
+                    <h2 class="section-header uppercase text-xs tracking-widest font-semibold text-gray-400 mb-3">SKILLS</h2>
+                    <div id="preview-skills" class="flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+            <p class="text-center text-xs text-gray-400 mt-4">Preview • Looks exactly like the downloaded PDF</p>
+        </div>
+    </div>
+
+    <!-- Footer with more monetization -->
+    <footer class="bg-white border-t py-8 text-center text-xs text-gray-500">
+        Made with ❤️ by <strong>P-L G.</strong> • <a href="https://x.com/PLG1991" target="_blank" class="underline">Follow me on X @PLG1991</a><br>
+        This tool is 100% free. Share it, use it, and if it helped you land a job — buy me a coffee ☕
+    </footer>
+
+    <script>
+        // Sample data
+        let experiences = [
+            { title: "Freelance Web Builder", company: "Self-employed", date: "2025 — Present", desc: "Built and launched multiple income-generating web tools from zero." }
+        ];
+        let educations = [
+            { school: "Your University", degree: "Bachelor in [Field]", date: "2021 — 2025" }
+        ];
+
+        function updatePreview() {
+            // Personal
+            document.getElementById('preview-name').textContent = document.getElementById('name').value || "Your Name";
+            document.getElementById('preview-title').textContent = document.getElementById('title').value || "Your Title";
+            
+            // Contact
+            const email = document.getElementById('email').value;
+            document.getElementById('preview-contact').innerHTML = `
+                <div>${email}</div>
+            `;
+
+            // Summary
+            document.getElementById('preview-summary').textContent = document.getElementById('summary').value;
+
+            // Experience
+            let expHTML = `<h2 class="section-header uppercase text-xs tracking-widest font-semibold text-gray-400 mb-3">EXPERIENCE</h2>`;
+            experiences.forEach(exp => {
+                expHTML += `
+                    <div class="mb-6">
+                        <div class="flex justify-between"><strong>\( {exp.title}</strong> <span class="text-gray-500"> \){exp.date}</span></div>
+                        <div class="text-sky-600">${exp.company}</div>
+                        <p class="text-gray-600 mt-1">${exp.desc}</p>
+                    </div>`;
+            });
+            document.getElementById('preview-experience').innerHTML = expHTML;
+
+            // Education
+            let eduHTML = `<h2 class="section-header uppercase text-xs tracking-widest font-semibold text-gray-400 mb-3">EDUCATION</h2>`;
+            educations.forEach(edu => {
+                eduHTML += `<div class="mb-4"><strong>\( {edu.degree}</strong><br><span class="text-gray-600"> \){edu.school} • ${edu.date}</span></div>`;
+            });
+            document.getElementById('preview-education').innerHTML = eduHTML;
+
+            // Skills
+            const skillsText = document.getElementById('skills').value;
+            const skillsArray = skillsText.split(',').map(s => s.trim()).filter(Boolean);
+            let skillsHTML = skillsArray.map(skill => `<span class="px-4 py-1 bg-gray-100 rounded-3xl text-xs">${skill}</span>`).join('');
+            document.getElementById('preview-skills').innerHTML = skillsHTML;
+        }
+
+        function addExperience() {
+            const title = prompt("Job title?");
+            if (!title) return;
+            const company = prompt("Company?");
+            const date = prompt("Dates (e.g. 2024 — Present)?");
+            const desc = prompt("Short description?");
+            experiences.push({ title, company, date, desc });
+            updatePreview();
+        }
+
+        function addEducation() {
+            const degree = prompt("Degree?");
+            if (!degree) return;
+            const school = prompt("School?");
+            const date = prompt("Dates?");
+            educations.push({ school, degree, date });
+            updatePreview();
+        }
+
+        async function downloadPDF() {
+            const preview = document.getElementById('resume-preview');
+            const canvas = await html2canvas(preview, { scale: 3 });
+            const imgData = canvas.toDataURL('image/png');
+            
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+            
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`Resume_${document.getElementById('name').value || 'P-L_G'}.pdf`);
+            
+            // Optional: show success message
+            alert("✅ PDF downloaded! Share the link to your live app and start getting users.");
+        }
+
+        // Initial load
+        window.onload = () => {
+            updatePreview();
+            // Tailwind script already loaded
+        };
+    </script>
+</body>
+</html>
